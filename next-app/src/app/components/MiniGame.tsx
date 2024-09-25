@@ -6,6 +6,7 @@ import { getContract } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
 import { client } from "../constants";
 import { name } from "thirdweb/extensions/common";
+import { console } from "inspector";
 
 interface Monster {
   health: number;
@@ -57,7 +58,7 @@ const monsterType = [
   },
 ];
 
-const MiniGame: React.FC = () => {
+function MiniGame() {
   const address = useActiveAccount()?.address;
   const [energy, setEnergy] = useState(30);
   const [monster, setMonster] = useState<Monster | null>(null);
@@ -135,7 +136,69 @@ const MiniGame: React.FC = () => {
         setShowReward(false);
         generateMonster();
       } else if (response.status === 408) {
+        console.log("Transaction not mined within timeout period:", result);
+      } else {
+        console.error("Claim failed:", result);
       }
-    } catch {}
+    } catch (error) {
+      console.error("Error claiming reward:", error);
+    } finally {
+      setIsClaiming(false);
+      refetchTokenBalance();
+    }
   };
-};
+  //   return {
+  //     <div className="flex flex-col items-center justify-center h-screen
+  //     bg-gray-900 text-white">
+  //       {tokenBalance && (
+  //         <div className="text-center">
+  //           <p>You have {tokenBalance?.displayValue} coins</p>
+  //         </div>
+  //       )}
+  //       {monster && (
+  //         <div className="text-center">
+  //           <div className="relative cursor-pointer" onClick={handleClick}>
+  //             <Image
+  //               src={monsterType.find(m => m.type === monster?.type)!.image}
+  //               alt={monster?.type}
+  //               width={200}
+  //               height={200}
+  //             />
+  //             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
+  //               Click to attack!
+  //             </div>
+  //           </div>
+  //           <div className="mt-4">{monsterTypes.find(m => m.type === monster?.type)?.name || 'Monster'}</div>
+  //           <div className="w-full bg-gray-700 rounded-full h-4 mt-2">
+  //             <div
+  //               className="bg-red-500 rounded-full h-4"
+  //               style={{width: `${(monster.health/monster.maxHealth)*100}%`}}></div>
+  //           </div>
+  //           <div className="mt-1">
+  //             {monster?.health}{monster?.maxHealth}
+  //           </div>
+  //         </div>
+  //       )}
+  //       <div className="mt-4 w-64 bg-gray-700 rounded-full h-6">
+  //         <div
+  //           className="bg-green-500 rounded-full h-6"
+  //           style={{width: `${(energy/30)*100}%`}}
+  //           ></div>
+  //       </div>
+  //       <div className="mt-2">Energy: {energy}/30</div>
+  //       {showReward && (
+  //         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+  //           <div className="bg-gray-800 p-6 rounded-lg text-center">
+  //             <h2 className="text-xl font-bold mb-4 text-white">{monsterTypes.find(m => m.type === monster!.type)?.name}</h2>
+  //             <p className="text-gray-300 mb-4">You earned {currentReward} coins!</p>
+  //             <button className={`mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
+  //               ${isClaiming? onclick={handleRewardClaim} disabled={isClaiming}}`}>
+  //                 {isClaiming ? 'Claiming...' : 'Claim Reward'}
+  //             </button>
+  //           </div>
+  //         </div>
+  //       )}
+  //     </div>
+  //   }
+  // }
+}
